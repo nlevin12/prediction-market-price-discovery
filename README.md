@@ -26,3 +26,13 @@ A reproducible research-engineering companion project studying whether probabili
 
 This repository intentionally excludes raw vendor data, API credentials, confidential research inputs, and large intermediate datasets. It provides a documented, runnable public companion to a larger research pipeline.
 
+
+
+\## Documentation
+
+
+
+\- \[Pipeline architecture](docs/architecture.md)
+
+\- \[Data policy](docs/data-policy.md)
+
