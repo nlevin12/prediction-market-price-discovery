@@ -1,0 +1,14 @@
+name: prediction-market-price-discovery
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - jupyterlab
+  - numpy
+  - pandas
+  - matplotlib
+  - pyarrow
+  - scipy
+  - statsmodels
+  - nbformat
+  - nbclient
