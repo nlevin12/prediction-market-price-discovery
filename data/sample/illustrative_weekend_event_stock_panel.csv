@@ -1,0 +1,5 @@
+platform,market_key,stock_ticker,session_date,friday_probability,sunday_probability,economic_sign,reopening_return_bps
+example,illustrative-policy-event,EXMP,2026-01-05,0.42,0.55,1,18.0
+example,illustrative-policy-event,EXMP,2026-01-12,0.58,0.46,1,-12.0
+example,illustrative-regulatory-event,DEMO,2026-01-05,0.31,0.44,-1,-16.0
+example,illustrative-regulatory-event,DEMO,2026-01-12,0.63,0.51,-1,14.0
