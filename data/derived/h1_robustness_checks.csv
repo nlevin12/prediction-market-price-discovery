@@ -1,0 +1,10 @@
+family,label,beta,se,pvalue,observations
+Baseline,Primary specification,2.7729406707,1.2625741722,0.0280733662,1173
+Peer construction,Add all peer-mismatch controls,2.6370369732,1.2338323950,0.0325757732,1173
+Peer construction,Inverse-distance peer outcome,2.8117750969,1.2342617130,0.0227204519,1173
+Weighting,Equal link weight,2.6582206116,1.6052174940,0.0977242863,1173
+Weighting,Equal stock weight,2.0682798036,1.4636308926,0.1576217056,1173
+Weighting,Equal date weight,2.5372161403,1.3231826438,0.0551731537,1173
+Influence,Remove 5 highest-leverage links,2.4739138431,1.1215814649,0.0274024130,1134
+Influence,Remove 10 highest-leverage links,2.0732466442,1.0503961068,0.0484072170,1062
+Influence,Remove 17 highest-leverage links,2.4824761268,1.2711637860,0.0508295466,1000

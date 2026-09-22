@@ -1,70 +1,85 @@
 # Closed for the Weekend
 
-### Public companion code for prediction-market and equity price-discovery research
+### Prediction markets as an upstream layer of price discovery
 
-When U.S. equity markets are closed over a weekend, prediction markets can continue to incorporate information about real-world events. This project studies whether those economically relevant probability revisions are reflected in the reopening prices of linked public firms.
+U.S. equities stop trading over the weekend, but prediction markets do not. I use that recurring closure to ask whether probability revisions on Polymarket and Kalshi are reflected in the reopening values of economically linked public firms.
 
-This is a deliberately scoped public companion to a larger research workflow. It demonstrates the research design, data-quality safeguards, and reusable signal construction without releasing licensed market data, confidential source materials, or the reviewed event--firm mapping.
+The main estimate is a within-link regression: a one-percentage-point favorable prediction-market revision is associated with a **2.77 basis-point favorable peer-adjusted stock reopening move**. The estimating sample contains 1,173 observations across 170 reviewed links, 41 stocks, and 91 reopening dates.
 
-```mermaid
-flowchart LR
-    A["Friday: equity market closes"] --> B["Prediction markets continue updating"]
-    B --> C["Economically signed event revision"]
-    C --> D["Monday: linked equity reopens"]
-```
+![Specification progression](figures/h1_specification_progression.png)
 
-## What this repository contains
+## What is in this repository
 
-| Area | Public component |
-| --- | --- |
-| Research design | A clear description of the hard-closure timing structure and its interpretation. |
-| Signal construction | A compact Python function that turns before/after probabilities into economically signed probability revisions. |
-| Data contracts | Schema checks that reject missing columns, invalid probabilities, and invalid event--firm signs. |
-| Reproducibility | Deterministic SHA-256 input-manifest utilities and tests. |
-| Jupyter walkthrough | A fully synthetic notebook that creates and visualizes an illustrative weekend event--firm panel. |
+- two executed notebooks built from empirical result tables;
+- the aggregate, non-identifying tables needed to reproduce every displayed figure;
+- compact Python utilities for signal construction and result validation;
+- tests for the reusable code and repository structure;
+- notes on the research design, data sources, and public/private boundary.
 
-## Quick start
+Start with:
 
-The repository is designed to be opened in JupyterLab.
+1. [`01_main_result.ipynb`](notebooks/01_main_result.ipynb) — specification progression and the primary estimate;
+2. [`02_randomization_and_robustness.ipynb`](notebooks/02_randomization_and_robustness.ipynb) — sign randomization, peer definitions, influence checks, and the response across horizons.
+
+## Main empirical facts
+
+| Quantity | Result |
+| --- | ---: |
+| Reviewed prediction-market–stock links | 749 |
+| Signed eligible links | 501 |
+| Primary estimating observations | 1,173 |
+| Primary coefficient | 2.773 bps per probability point |
+| Stock × date clustered *p*-value | 0.028 |
+| Market × date clustered *p*-value | 0.008 |
+| Within-date permutation *p*-value | 0.006 |
+| Date-cluster wild-bootstrap *p*-value | 0.007 |
+
+The coefficient remains positive as fixed effects and predetermined controls are added. It is also similar under alternative peer constructions and after removing the most influential links.
+
+![Sign randomization](figures/h1_sign_randomization.png)
+
+## Research design
+
+For each reviewed event–firm link, I measure the prediction-market probability change from Friday 8:00 p.m. to Sunday 8:00 p.m. Eastern. The window ends before some equities can resume overnight trading. Each probability change is multiplied by a reviewed economic sign, so positive values always mean favorable news for the linked firm.
+
+The primary outcome is the linked stock's reopening gap minus the same-date reopening gap of matched, unexposed peers. The regression includes link and reopening-date fixed effects and controls determined before the weekend. This design establishes temporal ordering during signal formation; it does not claim that prediction-market trading itself causes the equity move.
+
+The full specification is documented in [`docs/methodology.md`](docs/methodology.md). The data path is summarized in [`docs/research-pipeline.md`](docs/research-pipeline.md).
+
+## Reproduce the notebooks
+
+Python 3.11 or newer is recommended.
 
 ```bash
-conda env create -f environment.yml
-conda activate prediction-market-price-discovery
+python -m venv .venv
+```
+
+Activate the environment, then run:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+pytest
 jupyter lab
 ```
 
-Then open `notebooks/01_hard_weekend_design_demo.ipynb` and choose **Run All Cells**. Its data are generated locally from a fixed random seed, so the example is safe to share and reproducible.
+Both notebooks are already executed, so GitHub displays their tables and figures without requiring a local run.
+
+## Data availability
+
+The files in [`data/derived`](data/derived) are real aggregate outputs from the research pipeline, not synthetic examples. They contain coefficients, standard errors, randomization draws, and sample counts; they do not contain contract-level observations, firm mappings, credentials, or licensed market data.
+
+The underlying minute data come from Polymarket, Kalshi, and Databento. The equity data are licensed, and the merged panel would disclose the reviewed event–firm ledger, so the raw analysis inputs are not redistributed here. [`docs/data-sources.md`](docs/data-sources.md) describes exactly what is and is not included.
 
 ## Repository map
 
 ```text
-docs/                 Research-design, architecture, data-policy, and notebook notes
-notebooks/            Public Jupyter walkthroughs
-src/                  Small reusable validation, manifest, and signal utilities
-tests/                Automated checks for the public utilities
-data/sample/          Synthetic illustrative data only
-environment.yml       Reproducible Python/Jupyter environment
+data/derived/          Aggregate empirical outputs used by the notebooks
+docs/                  Methodology, source, and pipeline notes
+figures/               Figures regenerated by the executed notebooks
+notebooks/             Main result and robustness analyses
+src/pm_price_discovery Reusable validation and signal code
+tests/                 Unit and repository checks
 ```
 
-## Research design in brief
-
-The empirical idea is not that prediction markets mechanically cause equity returns. Rather, the weekend closure provides a clean timing environment: the prediction market may react to news while the linked equity cannot trade.
-
-For each economically defensible event--firm link, the workflow calculates a prediction-market probability revision and applies a reviewed economic sign. That puts heterogeneous links on a common scale: a positive signed revision is favorable to the linked firm regardless of whether the underlying event itself is good or bad.
-
-The full research workflow adds canonicalization, input freezes, peer-adjusted outcomes, fixed effects, diagnostics, and randomization-based checks. See [the methodology note](docs/methodology.md) and [the architecture note](docs/architecture.md) for the public explanation.
-
-## Public-data policy
-
-This repository intentionally excludes:
-
-- licensed or raw market data, trade caches, and vendor extracts;
-- API keys, credentials, and local machine configuration;
-- reviewed mapping ledgers, audit workbooks, and confidential research artifacts;
-- the protected empirical panel and paper-result tables.
-
-All files under `data/sample/` and all values generated in the public notebook are illustrative. They do not reproduce research estimates or constitute a trading strategy. Details are in [docs/data-policy.md](docs/data-policy.md).
-
-## Current status
-
-The public companion currently focuses on transparent design and engineering primitives. Future additions will remain public-safe and may include selected robustness demonstrations, timing diagnostics, and visualization templates using synthetic or appropriately shareable data.
+This is a research repository, not an investment recommendation or production trading system.

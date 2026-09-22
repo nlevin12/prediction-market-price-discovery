@@ -1,39 +1,34 @@
-# Private, licensed, or large research data
-data/raw/
-data/private/
-data/intermediate/
-cache/
-rebuilt/
-artifacts/
-private/
-*.parquet
-*.zip
-*.dbn
-*.feather
-*.pickle
-*.pkl
-*.csv.gz
-
-# Research-specific private inputs
-input_manifest_sha256.csv
-pm_stock_links_final_*.csv
-unique_event_manual_audit_workbook*.csv
-
-# Credentials
-.env
-.env.*
-*.pem
-*.key
-credentials*
-secrets*
-
-# Python and Jupyter
-.venv/
+# Python
 __pycache__/
 *.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Environments and notebooks
+.venv/
+venv/
 .ipynb_checkpoints/
 
-# Local machine files
+# Editors and operating systems
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
+
+# Local inputs and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+data/raw/
+data/intermediate/
+
+# Build outputs
+build/
+dist/
+htmlcov/
+.coverage

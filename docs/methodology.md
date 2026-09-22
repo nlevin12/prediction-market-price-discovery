@@ -1,48 +1,49 @@
-# Methodology note
+# Methodology
 
-## Question
+## Hard-closure window
 
-The research asks a timing question: when a prediction market updates while U.S. equities are closed, is that information reflected in the reopening return of an economically linked firm?
+The signal window runs from Friday 8:00 p.m. to Sunday 8:00 p.m. Eastern. U.S.-listed equities cannot trade during this interval, while Polymarket and Kalshi can continue updating. Ending the window on Sunday evening avoids overlap with the earliest resumption of overnight equity trading.
 
-The design is deliberately not framed as prediction markets causing stock returns. Both markets may respond to the same underlying information. The closure helps establish which market was able to move first.
+The design identifies temporal price discovery: the prediction market can move before the linked equity reopens. Both markets may still be responding to the same underlying news.
 
-## Event--firm links and economic signs
+## Signed prediction-market revision
 
-An observation begins with an economically defensible link between a prediction-market contract and a public company. Each link receives an economic sign:
+For reviewed link $\ell$ and reopening date $d$, let $p^F_{\ell d}$ and $p^S_{\ell d}$ be the latest contract probabilities at or before the Friday and Sunday boundaries. Let $g_\ell \in \{-1,+1\}$ record whether a higher probability of the contract's YES outcome is unfavorable or favorable to the linked firm.
 
-- `+1` when an increase in the event probability is favorable to the linked firm;
-- `-1` when an increase is unfavorable.
+$$
+S_{\ell d} = g_\ell \times 100\left(p^S_{\ell d}-p^F_{\ell d}\right).
+$$
 
-The sign makes different events comparable. For example, a higher probability of a favorable regulatory decision and a lower probability of an adverse event can both become positive signed revisions for the relevant firm.
+$S_{\ell d}$ is measured in percentage points. A positive value is favorable to the linked stock, regardless of how the underlying contract is worded.
 
-## Illustrative signal construction
+## Reopening outcome
 
-Let \(p_{i,t}^{\mathrm{before}}\) be the contract probability before the closure interval and \(p_{i,t}^{\mathrm{after}}\) its probability after the interval. The probability revision in percentage points is:
+The equity reopening price combines quote and trade information. A usable two-sided quote midpoint and a volume-weighted trade-price measure are constructed from the first five regular-session minutes. A stock-date is retained only when the two estimates agree within a threshold calibrated outside the analysis sample.
 
-\[
-\Delta p_{i,t} = 100 \times \left(p_{i,t}^{\mathrm{after}} - p_{i,t}^{\mathrm{before}}\right).
-\]
+For stock $s$ on date $d$, the raw reopening gap is compared with a set $\mathcal{P}_{\ell d}$ of matched same-date firms that have no reviewed exposure to the event:
 
-With an economic sign \(g_i \in \{-1,+1\}\), the standardized event signal is:
+$$
+Y_{\ell d} = g_{sd} - \frac{1}{|\mathcal{P}_{\ell d}|}
+\sum_{j \in \mathcal{P}_{\ell d}} g_{jd}.
+$$
 
-\[
-s_{i,t} = g_i \times \Delta p_{i,t}.
-\]
+Peers are selected using only pre-closure characteristics: size, trailing opening-gap volatility, prior-session return, and final-30-minute return.
 
-`src/features.py` implements this public transformation. The synthetic notebook uses the same schema and calculation, but it does not estimate or reproduce the underlying research results.
+## Primary regression
 
-## Full workflow versus public companion
+The estimating equation is
 
-The protected research workflow includes more than this small transformation:
+$$
+Y_{\ell d} = \beta S_{\ell d} + \alpha_\ell + \lambda_d
++ X_{s,d-1}'\gamma + \varepsilon_{\ell d},
+$$
 
-1. Freeze raw inputs and record reproducibility manifests.
-2. Canonicalize equity and prediction-market data into explicit schemas.
-3. Validate timestamps, probability paths, market status, and event--firm link metadata.
-4. Construct weekend boundary states and peer-adjusted reopening outcomes.
-5. Estimate within-link relationships and apply robustness and randomization checks.
+where $\alpha_\ell$ are event–firm-link fixed effects and $\lambda_d$ are reopening-date fixed effects. The controls in $X_{s,d-1}$ are known before the weekend: prior-session return, final-30-minute return, and trailing 20-session opening-gap volatility.
 
-The public repository presents selected engineering and design elements only. Its code and data are not a full replication package, and no empirical conclusion should be inferred from its synthetic example.
+The coefficient $\beta$ is an event-to-equity conversion rate: basis points of peer-adjusted reopening movement per one-percentage-point favorable prediction-market revision.
 
-## Interpretation
+The primary estimate is $\hat\beta=2.773$. Standard errors are two-way clustered by stock and date; the repository also reports clustering by prediction market and date, a date-cluster wild bootstrap, and a within-date permutation test.
 
-The central interpretation is temporal price discovery: a market for real-world states can incorporate information during a period when the linked financial claim is unable to trade. The design does not establish that a prediction market itself moves equity prices, nor does it provide investment advice.
+## Scope of the public files
+
+The notebooks reproduce figures and summaries from frozen aggregate outputs. They do not re-estimate the model from contract-level and stock-level observations because those inputs include licensed data and the reviewed event–firm ledger.
