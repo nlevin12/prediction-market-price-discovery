@@ -2,7 +2,7 @@
 
 ### Prediction markets as an upstream layer of price discovery
 
-Paper: [`Closed for the Weekend`](Closed for the Weekend.pdf)
+Paper: [`Closed for the Weekend`](./Closed for the Weekend.pdf)
 
 U.S. equities stop trading over the weekend, but prediction markets do not. I use that recurring closure to ask whether probability revisions on Polymarket and Kalshi are reflected in the reopening values of economically linked public firms. This repository contains the aggregate empirical results, executed notebooks, figures, and supporting Python code accompanying the paper.
 
