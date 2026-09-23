@@ -2,7 +2,9 @@
 
 ### Prediction markets as an upstream layer of price discovery
 
-U.S. equities stop trading over the weekend, but prediction markets do not. I use that recurring closure to ask whether probability revisions on Polymarket and Kalshi are reflected in the reopening values of economically linked public firms.
+Paper: [`Closed for the Weekend`](Closed for the Weekend.pdf)
+
+U.S. equities stop trading over the weekend, but prediction markets do not. I use that recurring closure to ask whether probability revisions on Polymarket and Kalshi are reflected in the reopening values of economically linked public firms. This repository contains the aggregate empirical results, executed notebooks, figures, and supporting Python code accompanying the paper.
 
 The main estimate is a within-link regression: a one-percentage-point favorable prediction-market revision is associated with a **2.77 basis-point favorable peer-adjusted stock reopening move**. The estimating sample contains 1,173 observations across 170 reviewed links, 41 stocks, and 91 reopening dates.
 
